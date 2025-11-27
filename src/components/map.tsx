@@ -91,6 +91,8 @@ export default function Map({data, selectedDate, minDate, maxDate, onDateChange}
           latitude: 51.04609,
           zoom: 9.5,
         }}
+        minZoom={9}
+        maxZoom={12}
         style={{
           position: "absolute",
           top: 0,
