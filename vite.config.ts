@@ -19,7 +19,7 @@ function wasmMimeTypePlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: mode === "production" ? "/development-permit/" : "/",
+  base: mode === "production" ? "/development-permit-map/" : "/",
   plugins: [
     react(),
     wasmMimeTypePlugin(),
