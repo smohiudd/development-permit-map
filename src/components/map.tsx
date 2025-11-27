@@ -4,6 +4,7 @@ import { MapboxOverlay } from "@deck.gl/mapbox";
 import type { DeckProps } from "@deck.gl/core";
 import { GeoArrowScatterplotLayer } from "@geoarrow/deck.gl-layers";
 import { Table } from "apache-arrow";
+import {PickingInfo} from '@deck.gl/core';
 import DateTimeSlider from "./DateTimeSlider";
 import { CATEGORY_COLORS, DEFAULT_COLOR, ALL_CATEGORIES, SUBCATEGORIES, SUBCATEGORY_COLORS } from "./categoryColors";
 
@@ -22,6 +23,35 @@ function DeckGLOverlay(props: DeckProps) {
   overlay.setProps(props);
   return null;
 }
+
+type DataType = {
+  PermitNum?: string;
+  Address?: string;
+  Category?: string;
+  ProposedUseDescription?: string;
+  LandUseDistrict?: string;
+}
+
+function getTooltip({object}: PickingInfo<DataType>) {
+  if (!object) {
+    return null;
+  }
+
+  return {
+    html: `<p>${object["PermitNum"]}</p>`,
+    style: {
+      backgroundColor: '#fff',
+      fontSize: '1.5em',
+      position: 'absolute',
+      top: '-45px',
+      left: '-70px',
+      padding: '8px',
+      borderRadius: '4px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+    }
+  };
+}
+
 
 export default function Map({data, selectedDate, minDate, maxDate, onDateChange}: Props) {
   const mapRef = useRef<MapRef>(null);
@@ -102,7 +132,7 @@ export default function Map({data, selectedDate, minDate, maxDate, onDateChange}
         }}
         mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
       >
-        <DeckGLOverlay layers={layers} />
+        <DeckGLOverlay layers={layers} getTooltip={(info) => getTooltip(info)}/>
       </MaplibreMap>
       <div style={{
         position: "absolute",
@@ -229,6 +259,28 @@ export default function Map({data, selectedDate, minDate, maxDate, onDateChange}
               );
             })}
           </div>
+        </div>
+
+        {/* Source Data Link */}
+        <div style={{
+          marginTop: "8px",
+          paddingTop: "8px",
+          borderTop: "1px solid #eee",
+        }}>
+          <a
+            href="https://data.calgary.ca/Business-and-Economic-Activity/Development-Permits/6933-unw5/about_data"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontSize: "12px",
+              color: "#333",
+              textDecoration: "none",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+            onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+          >
+            Source Data: City of Calgary
+          </a>
         </div>
       </div>
       {minDate && maxDate && selectedDate && onDateChange && (
