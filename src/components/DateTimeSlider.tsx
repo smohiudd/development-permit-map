@@ -43,28 +43,6 @@ export default function DateTimeSlider({
     return null;
   };
 
-  // Compute max count across ALL data (for consistent y-axis scale)
-  const maxCountAll = useMemo(() => {
-    if (!data) return 1;
-
-    const counts = new Map<string, number>();
-    const releaseDateColumn = data.getChild("ReleaseDate");
-
-    if (!releaseDateColumn) return 1;
-
-    const releaseDates = releaseDateColumn.toArray();
-
-    for (let i = 0; i < releaseDates.length; i++) {
-      const releaseDate = releaseDates[i];
-      if (!releaseDate) continue;
-
-      const yearMonth = releaseDate.slice(0, 7);
-      counts.set(yearMonth, (counts.get(yearMonth) || 0) + 1);
-    }
-
-    return d3.max(Array.from(counts.values())) || 1;
-  }, [data]);
-
   // Compute histogram data by subcategory
   const histogramData = useMemo(() => {
     if (!data) return [];
@@ -167,15 +145,12 @@ export default function DateTimeSlider({
       .attr("font-weight", "500")
       .text(maxCount.toString());
 
-    const selectedYearMonth = selectedDate.toISOString().slice(0, 7);
-
     // Draw stacked bars for each month
     histogramData.forEach((monthData) => {
       const month = monthData.month;
       const x = xScale(month) || 0;
       const width = xScale.bandwidth();
       let yOffset = innerHeight;
-      const isSelected = month === selectedYearMonth;
 
       // Sort subcategories for consistent stacking
       const subcategoryEntries = Array.from(monthData.subcategories.entries()).sort((a, b) => b[1] - a[1]);

@@ -1,4 +1,4 @@
-import { schemePaired, schemeSet3 } from "d3-scale-chromatic";
+import { schemePaired } from "d3-scale-chromatic";
 
 // Mapping of subcategory to categories
 const SUBCATEGORY_TO_CATEGORIES: Record<string, string[]> = {

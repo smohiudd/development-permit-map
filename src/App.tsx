@@ -11,7 +11,6 @@ const GEOMETRY_COLUMN = "geometry";
 
 function App() {
   const [table, setTable] = useState<Table | undefined>(undefined);
-  const [status, setStatus] = useState("Loading development permits…");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   //min max date from table
   const [minDate, setMinDate] = useState<Date | undefined>(undefined);
@@ -24,13 +23,11 @@ function App() {
     async function loadData() {
       try {
         await initWasm();
-        setStatus("Fetching GeoParquet…");
         const resp = await fetch(DATA_URL);
         if (!resp.ok) {
           throw new Error(`Failed to fetch GeoParquet (${resp.status})`);
         }
         const arrayBuffer = await resp.arrayBuffer();
-        setStatus("Parsing GeoArrow table…");
         const wasmTable = readParquet(new Uint8Array(arrayBuffer));
         
         const jsTable = tableFromIPC(wasmTable.intoIPCStream());
@@ -59,15 +56,9 @@ function App() {
         }
         if (!cancelled) {
           setTable(jsTable);
-          setStatus("");
         }
       } catch (err) {
         console.error("readParquet failed", err);
-        if (!cancelled) {
-          const message =
-            err instanceof Error ? err.message : "Unknown error";
-          setStatus(`Unable to load data: ${message}`);
-        }
       }
     }
 
